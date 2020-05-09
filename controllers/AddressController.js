@@ -24,7 +24,8 @@ module.exports = {
     }
 
     const { name, phone, city, area, street, building } = req.body;
-    const attributes = [
+
+    const params = [
       { key: "name", val: name },
       { key: "phone", val: phone },
       { key: "city", val: city },
@@ -33,16 +34,18 @@ module.exports = {
       { key: "building", val: building }
     ];
 
-    const messages = attributes.reduce((acc, val) => {
+    const missingParams = params.reduce((acc, val) => {
       if (!val.val) {
-        return acc.concat(`${val.key} is required`);
+        return acc.concat(val.key);
       }
 
       return acc;
     }, []);
 
-    if (messages) {
-      return res.status(422).json({ message: messages });
+    if (missingParams.length) {
+      return res
+        .status(422)
+        .json({ message: "Required Fields: " + missingParams.join(", ") });
     }
 
     try {
